@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>宿主机访问虚拟机web项目 | 罗昌洪的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="解决主机无法访问虚拟机web项目主机和虚拟机能够互相ping通，宿主机无法访问虚拟机web项目 设置虚拟机网络模式为nat 配置ip转发规则打开VM 点击编辑-&gt;虚拟网络编辑-&gt;更改设置-&gt;选择VMnet8 -&gt;nat设置  规则如下    主机端口 虚拟机ip&#x2F;端口    本机ip端口(1234) 192.168.157.129&#x2F;1234   打开浏览器输入本地ip:端口">
+<meta property="og:type" content="article">
+<meta property="og:title" content="宿主机访问虚拟机web项目">
+<meta property="og:url" content="http://example.com/2020/10/22/%E5%AE%BF%E4%B8%BB%E6%9C%BA%E8%AE%BF%E9%97%AE%E8%99%9A%E6%8B%9F%E6%9C%BAweb%E9%A1%B9%E7%9B%AE/index.html">
+<meta property="og:site_name" content="罗昌洪的博客">
+<meta property="og:description" content="解决主机无法访问虚拟机web项目主机和虚拟机能够互相ping通，宿主机无法访问虚拟机web项目 设置虚拟机网络模式为nat 配置ip转发规则打开VM 点击编辑-&gt;虚拟网络编辑-&gt;更改设置-&gt;选择VMnet8 -&gt;nat设置  规则如下    主机端口 虚拟机ip&#x2F;端口    本机ip端口(1234) 192.168.157.129&#x2F;1234   打开浏览器输入本地ip:端口">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-10-22T11:44:29.000Z">
+<meta property="article:modified_time" content="2020-10-23T05:53:40.213Z">
+<meta property="article:author" content="lch">
+<meta property="article:tag" content="nginx">
+<meta property="article:tag" content="firewalld">
+<meta property="article:tag" content="vmware">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="罗昌洪的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">罗昌洪的博客</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-宿主机访问虚拟机web项目" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/10/22/%E5%AE%BF%E4%B8%BB%E6%9C%BA%E8%AE%BF%E9%97%AE%E8%99%9A%E6%8B%9F%E6%9C%BAweb%E9%A1%B9%E7%9B%AE/" class="article-date">
+  <time datetime="2020-10-22T11:44:29.000Z" itemprop="datePublished">2020-10-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      宿主机访问虚拟机web项目
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="解决主机无法访问虚拟机web项目"><a href="#解决主机无法访问虚拟机web项目" class="headerlink" title="解决主机无法访问虚拟机web项目"></a>解决主机无法访问虚拟机web项目</h1><p>主机和虚拟机能够互相ping通，宿主机无法访问虚拟机web项目</p>
+<h2 id="设置虚拟机网络模式为nat-配置ip转发规则"><a href="#设置虚拟机网络模式为nat-配置ip转发规则" class="headerlink" title="设置虚拟机网络模式为nat 配置ip转发规则"></a>设置虚拟机网络模式为nat 配置ip转发规则</h2><p>打开VM 点击编辑-&gt;虚拟网络编辑-&gt;更改设置-&gt;选择VMnet8 -&gt;nat设置  规则如下</p>
+<table>
+<thead>
+<tr>
+<th>主机端口</th>
+<th>虚拟机ip/端口</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>本机ip端口(1234)</td>
+<td>192.168.157.129/1234</td>
+</tr>
+</tbody></table>
+<p>打开浏览器输入本地ip:端口即可正在访问虚拟机项目</p>
+<h3 id="无法正常访问问题排查"><a href="#无法正常访问问题排查" class="headerlink" title="无法正常访问问题排查"></a>无法正常访问问题排查</h3><p>一切操作基于win10系统下</p>
+<h4 id="检查宿主机防火墙"><a href="#检查宿主机防火墙" class="headerlink" title="检查宿主机防火墙"></a>检查宿主机防火墙</h4><p>防火墙正常开启可以选择系统关闭防火墙，也可以进行如下操作：</p>
+<p>控制面板-&gt;系统和安全-&gt;windows Defender-&gt;高级设置-&gt;入站规则-&gt;新建入站规则</p>
+<ul>
+<li>规则类型    端口</li>
+<li>协议与端口  tcp /配置的端口 (1234)</li>
+<li>操作  允许连接（A）</li>
+<li>配置文件   全部勾选</li>
+<li>名称  随意</li>
+</ul>
+<p>打开浏览器输入本地ip:端口即可正在访问虚拟机项目</p>
+<h4 id="检查虚拟机防火墙以及开放的端口"><a href="#检查虚拟机防火墙以及开放的端口" class="headerlink" title="检查虚拟机防火墙以及开放的端口"></a>检查虚拟机防火墙以及开放的端口</h4><p>查看防火墙状态</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service iptables status</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>暴力解决直接关闭防火墙</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service iptables stop 临时关闭</span><br><span class="line">chkconfig iptables off   永久关闭</span><br></pre></td></tr></table></figure>
+<p><em>到此应该就可以正常访问了</em></p>
+<blockquote>
+<p>温柔的解决方案</p>
+</blockquote>
+<ul>
+<li>查看80端口是否开启<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --query-port&#x3D;80&#x2F;tcp</span><br></pre></td></tr></table></figure></li>
+<li>打开80端口<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone&#x3D;public --add-port&#x3D;80&#x2F;tcp --permanent (表示永久)</span><br><span class="line"></span><br><span class="line">systemctl restart firewalld  重启服务</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/10/22/%E5%AE%BF%E4%B8%BB%E6%9C%BA%E8%AE%BF%E9%97%AE%E8%99%9A%E6%8B%9F%E6%9C%BAweb%E9%A1%B9%E7%9B%AE/" data-id="ckgluazul0002c8uyeepc8o8z" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/firewalld/" rel="tag">firewalld</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vmware/" rel="tag">vmware</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/10/19/nginx-%E5%88%9D%E8%AF%86%E4%B8%8E%E5%AE%89%E8%A3%85/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">nginx 初识与安装</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/firewalld/" rel="tag">firewalld</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vmware/" rel="tag">vmware</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/firewalld/" style="font-size: 10px;">firewalld</a> <a href="/tags/nginx/" style="font-size: 20px;">nginx</a> <a href="/tags/vmware/" style="font-size: 10px;">vmware</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">十月 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/10/22/%E5%AE%BF%E4%B8%BB%E6%9C%BA%E8%AE%BF%E9%97%AE%E8%99%9A%E6%8B%9F%E6%9C%BAweb%E9%A1%B9%E7%9B%AE/">宿主机访问虚拟机web项目</a>
+          </li>
+        
+          <li>
+            <a href="/2020/10/19/nginx-%E5%88%9D%E8%AF%86%E4%B8%8E%E5%AE%89%E8%A3%85/">nginx 初识与安装</a>
+          </li>
+        
+          <li>
+            <a href="/2020/10/12/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 lch<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
