@@ -5,17 +5,20 @@
   
 
   
-  <title>罗昌洪的博客</title>
+  <title>keepalived 集群 | 罗昌洪的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="从非常规思维出发往往会有惊喜发生">
-<meta property="og:type" content="website">
-<meta property="og:title" content="罗昌洪的博客">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="keepalived 概念 解决单点故障 组件免费 可以实现高可用HA机制 基于VRRP协议  VRRP 虚拟路由冗余协议 解决内网单机故障的路由协议 构建多个路由器 master backup  (master backup 选举的模式竞选) 虚拟IP - VIP（virtual IP Address）  keepalived 安装12345wget http:&#x2F;&#x2F;www.k">
+<meta property="og:type" content="article">
+<meta property="og:title" content="keepalived 集群">
+<meta property="og:url" content="http://example.com/2020/11/02/keepalived-%E9%9B%86%E7%BE%A4/index.html">
 <meta property="og:site_name" content="罗昌洪的博客">
-<meta property="og:description" content="从非常规思维出发往往会有惊喜发生">
+<meta property="og:description" content="keepalived 概念 解决单点故障 组件免费 可以实现高可用HA机制 基于VRRP协议  VRRP 虚拟路由冗余协议 解决内网单机故障的路由协议 构建多个路由器 master backup  (master backup 选举的模式竞选) 虚拟IP - VIP（virtual IP Address）  keepalived 安装12345wget http:&#x2F;&#x2F;www.k">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-02T10:14:23.000Z">
+<meta property="article:modified_time" content="2020-11-02T10:15:26.231Z">
 <meta property="article:author" content="lch">
-<meta property="article:tag" content="php、java、集群、高并发、js、小程序、微服务、web">
+<meta property="article:tag" content="nginx">
+<meta property="article:tag" content="keepalived">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="罗昌洪的博客" type="application/atom+xml">
@@ -65,9 +68,7 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-keepalived-集群" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-keepalived-集群" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/11/02/keepalived-%E9%9B%86%E7%BE%A4/" class="article-date">
   <time datetime="2020-11-02T10:14:23.000Z" itemprop="datePublished">2020-11-02</time>
@@ -80,8 +81,8 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/11/02/keepalived-%E9%9B%86%E7%BE%A4/">keepalived 集群</a>
+    <h1 class="article-title" itemprop="name">
+      keepalived 集群
     </h1>
   
 
@@ -148,211 +149,19 @@
     </footer>
   </div>
   
-</article>
-
-
+    
+<nav id="article-nav">
   
-    <article id="post-宿主机访问虚拟机web项目" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/10/22/%E5%AE%BF%E4%B8%BB%E6%9C%BA%E8%AE%BF%E9%97%AE%E8%99%9A%E6%8B%9F%E6%9C%BAweb%E9%A1%B9%E7%9B%AE/" class="article-date">
-  <time datetime="2020-10-22T11:44:29.000Z" itemprop="datePublished">2020-10-22</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/22/%E5%AE%BF%E4%B8%BB%E6%9C%BA%E8%AE%BF%E9%97%AE%E8%99%9A%E6%8B%9F%E6%9C%BAweb%E9%A1%B9%E7%9B%AE/">宿主机访问虚拟机web项目</a>
-    </h1>
+    <a href="/2020/10/22/%E5%AE%BF%E4%B8%BB%E6%9C%BA%E8%AE%BF%E9%97%AE%E8%99%9A%E6%8B%9F%E6%9C%BAweb%E9%A1%B9%E7%9B%AE/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">宿主机访问虚拟机web项目</div>
+    </a>
   
+</nav>
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="解决主机无法访问虚拟机web项目"><a href="#解决主机无法访问虚拟机web项目" class="headerlink" title="解决主机无法访问虚拟机web项目"></a>解决主机无法访问虚拟机web项目</h1><p>主机和虚拟机能够互相ping通，宿主机无法访问虚拟机web项目</p>
-<h2 id="设置虚拟机网络模式为nat-配置ip转发规则"><a href="#设置虚拟机网络模式为nat-配置ip转发规则" class="headerlink" title="设置虚拟机网络模式为nat 配置ip转发规则"></a>设置虚拟机网络模式为nat 配置ip转发规则</h2><p>打开VM 点击编辑-&gt;虚拟网络编辑-&gt;更改设置-&gt;选择VMnet8 -&gt;nat设置  规则如下</p>
-<table>
-<thead>
-<tr>
-<th>主机端口</th>
-<th>虚拟机ip/端口</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>本机ip端口(1234)</td>
-<td>192.168.157.129/1234</td>
-</tr>
-</tbody></table>
-<p>打开浏览器输入本地ip:端口即可正在访问虚拟机项目</p>
-<h3 id="无法正常访问问题排查"><a href="#无法正常访问问题排查" class="headerlink" title="无法正常访问问题排查"></a>无法正常访问问题排查</h3><p>一切操作基于win10系统下</p>
-<h4 id="检查宿主机防火墙"><a href="#检查宿主机防火墙" class="headerlink" title="检查宿主机防火墙"></a>检查宿主机防火墙</h4><p>防火墙正常开启可以选择系统关闭防火墙，也可以进行如下操作：</p>
-<p>控制面板-&gt;系统和安全-&gt;windows Defender-&gt;高级设置-&gt;入站规则-&gt;新建入站规则</p>
-<ul>
-<li>规则类型    端口</li>
-<li>协议与端口  tcp /配置的端口 (1234)</li>
-<li>操作  允许连接（A）</li>
-<li>配置文件   全部勾选</li>
-<li>名称  随意</li>
-</ul>
-<p>打开浏览器输入本地ip:端口即可正在访问虚拟机项目</p>
-<h4 id="检查虚拟机防火墙以及开放的端口"><a href="#检查虚拟机防火墙以及开放的端口" class="headerlink" title="检查虚拟机防火墙以及开放的端口"></a>检查虚拟机防火墙以及开放的端口</h4><p>查看防火墙状态</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service iptables status</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>暴力解决直接关闭防火墙</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service iptables stop 临时关闭</span><br><span class="line">chkconfig iptables off   永久关闭</span><br></pre></td></tr></table></figure>
-<p><em>到此应该就可以正常访问了</em></p>
-<blockquote>
-<p>温柔的解决方案</p>
-</blockquote>
-<ul>
-<li>查看80端口是否开启<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --query-port&#x3D;80&#x2F;tcp</span><br></pre></td></tr></table></figure></li>
-<li>打开80端口<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone&#x3D;public --add-port&#x3D;80&#x2F;tcp --permanent (表示永久)</span><br><span class="line"></span><br><span class="line">systemctl restart firewalld  重启服务</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/22/%E5%AE%BF%E4%B8%BB%E6%9C%BA%E8%AE%BF%E9%97%AE%E8%99%9A%E6%8B%9F%E6%9C%BAweb%E9%A1%B9%E7%9B%AE/" data-id="ckh0e1bk40009bouyg5re7y5n" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/firewalld/" rel="tag">firewalld</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vmware/" rel="tag">vmware</a></li></ul>
-
-    </footer>
-  </div>
   
 </article>
-
-
-  
-    <article id="post-nginx-初识与安装" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/10/19/nginx-%E5%88%9D%E8%AF%86%E4%B8%8E%E5%AE%89%E8%A3%85/" class="article-date">
-  <time datetime="2020-10-19T12:38:25.000Z" itemprop="datePublished">2020-10-19</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/19/nginx-%E5%88%9D%E8%AF%86%E4%B8%8E%E5%AE%89%E8%A3%85/">nginx 初识与安装</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="nginx初识"><a href="#nginx初识" class="headerlink" title="nginx初识"></a>nginx初识</h1><h2 id="什么是nginx"><a href="#什么是nginx" class="headerlink" title="什么是nginx"></a>什么是nginx</h2><p>Nginx 是一个高性能的http和反向代理web服务器 同时提供IMAP/pop3/smtp服务</p>
-<ul>
-<li>主要功能反向代理</li>
-<li>通过配置文件可以实现集群和负载均衡</li>
-<li>静态资源虚拟化</li>
-</ul>
-<h3 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h3><p>客户端请求目标服务器之间的一个代理服务器<br>过程: 请求-&gt;代理服务器-&gt;转发到目标服务器 -&gt;获得内容后响应客户端</p>
-<h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><p>用户请求目标服务器，由代理服务器决定访问哪个ip</p>
-<h2 id="nginx-安装"><a href="#nginx-安装" class="headerlink" title="nginx 安装"></a>nginx 安装</h2><h3 id="配置EPEL源"><a href="#配置EPEL源" class="headerlink" title="配置EPEL源"></a>配置EPEL源</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -y epel-release</span><br><span class="line">sudo yum -y update</span><br></pre></td></tr></table></figure>
-<h3 id="安装ngxin"><a href="#安装ngxin" class="headerlink" title="安装ngxin"></a>安装ngxin</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -y nginx</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>安装成功后，默认的网站目录为： /usr/share/nginx/html</p>
-<p>默认的配置文件为：/etc/nginx/nginx.conf</p>
-<p>自定义配置文件目录为: /etc/nginx/conf.d/</p>
-<h3 id="开启端口80和443"><a href="#开启端口80和443" class="headerlink" title="开启端口80和443"></a>开启端口80和443</h3><p>如果你的服务器打开了防火墙，你需要运行下面的命令，打开80和443端口。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo firewall-cmd --permanent --zone&#x3D;public --add-service&#x3D;http</span><br><span class="line">sudo firewall-cmd --permanent --zone&#x3D;public --add-service&#x3D;https</span><br><span class="line">sudo firewall-cmd --reload</span><br></pre></td></tr></table></figure>
-
-<h3 id="操作Nginx"><a href="#操作Nginx" class="headerlink" title="操作Nginx"></a>操作Nginx</h3><ul>
-<li>启动nginx</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl start nginx</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<ul>
-<li>停止nginx</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop nginx</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<ul>
-<li>重启nginx</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart nginx</span><br></pre></td></tr></table></figure>
-<ul>
-<li>查看ngxin 状态</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl status nginx</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>-启用开机启动nginx</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable nginx</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/19/nginx-%E5%88%9D%E8%AF%86%E4%B8%8E%E5%AE%89%E8%A3%85/" data-id="ckh0e1bjm0001bouy2t2l7ck8" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/10/12/hello-world/" class="article-date">
-  <time datetime="2020-10-12T05:58:19.865Z" itemprop="datePublished">2020-10-12</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/12/hello-world/">Hello World</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/12/hello-world/" data-id="ckh0e1bjf0000bouy482z4lqa" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-
 
 </section>
         
