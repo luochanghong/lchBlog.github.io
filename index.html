@@ -67,6 +67,95 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-nginx集群负载均衡与缓存" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/11/06/nginx%E9%9B%86%E7%BE%A4%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E4%B8%8E%E7%BC%93%E5%AD%98/" class="article-date">
+  <time datetime="2020-11-06T08:22:25.000Z" itemprop="datePublished">2020-11-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/11/06/nginx%E9%9B%86%E7%BE%A4%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E4%B8%8E%E7%BC%93%E5%AD%98/">nginx集群负载均衡与缓存</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="nginx集群负载均衡与缓存"><a href="#nginx集群负载均衡与缓存" class="headerlink" title="nginx集群负载均衡与缓存"></a>nginx集群负载均衡与缓存</h1><p>单节点服务器存在最大的缺陷就是服务器一旦宕机，所有项目服务都不能正常访问。</p>
+<p>集群服务器则能很好的解决以上问题，并且任务处理更快，效率高，性能高。而且集群在一般情况下1+1是大于2 的 ，比如2核4g + 2核4g &gt; 4核4g</p>
+<h2 id="集群配置-upstream"><a href="#集群配置-upstream" class="headerlink" title="集群配置 upstream"></a>集群配置 upstream</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">upstream back.cn&#123;</span><br><span class="line">    server 192.168.157.130;</span><br><span class="line">    server 192.168.157.129;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  localhost;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        proxy_pass http:&#x2F;&#x2F;back.cn;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page   500 502 503 504  &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">        root   html;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="upstream-常见指令参数"><a href="#upstream-常见指令参数" class="headerlink" title="upstream 常见指令参数"></a>upstream 常见指令参数</h3><ul>
+<li><p>max_conns 最大连接数</p>
+</li>
+<li><p>weight 10  权重</p>
+</li>
+<li><p>slow_start 60s 表示在一段时间端内慢慢增加当前服务器的权重，并启动</p>
+</li>
+<li><p>down 标识服务器不可用</p>
+</li>
+<li><p>backup 表示备用机 正常情况下不适用 只用当其它服务器宕机了，才能正常提供服务</p>
+</li>
+<li><p>max_fails  最大失败次数。到达这个数量之后表示当前server宕机了</p>
+</li>
+<li><p>fail_timeout  15s 表示识别为宕机服务器之后多长时间内不给当前服务器发送服务。</p>
+</li>
+</ul>
+<p>weight和slow_start 配对使用</p>
+<p>max_fails和fail_timeout一般是配对使用</p>
+<h3 id="keepalive-提高吞吐量"><a href="#keepalive-提高吞吐量" class="headerlink" title="keepalive 提高吞吐量"></a>keepalive 提高吞吐量</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">upstream back.cn&#123;</span><br><span class="line">    server 192.168.157.130;</span><br><span class="line">    server 192.168.157.129;</span><br><span class="line">    keepalive  60;&#x2F;&#x2F;表示长连接数量</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  localhost;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        proxy_pass http:&#x2F;&#x2F;back.cn;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;长链接配置</span><br><span class="line">        proxy_http_version 1.1;</span><br><span class="line">        proxy_set_header_connection &quot;&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    error_page   500 502 503 504  &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">        root   html;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="ip-hash-配置负载均衡"><a href="#ip-hash-配置负载均衡" class="headerlink" title="ip_hash 配置负载均衡"></a>ip_hash 配置负载均衡</h2><p>hash算法介绍 hash(ip) % node_counts = index; 将客户端ip进行hash之后跟客户端借点进行求模。这样保证了只要客户端ip不变所有的请求将会落到同一台服务器上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">upstream back.cn&#123;</span><br><span class="line">    ip_hash;</span><br><span class="line">    server 192.168.157.130;</span><br><span class="line">    server 192.168.157.129;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  localhost;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        proxy_pass http:&#x2F;&#x2F;back.cn;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>问题:一旦有一台服务器宕机之后  所有的客户端请求将要重新计算求模。这样就会导致客户端的会话中断。</p>
+<ul>
+<li>一致性哈希算法</li>
+</ul>
+<p>解决大部分用户的连接不需要改变</p>
+<p>将服务器利用环形（0 到 2^32 - 1）将服务器ip利用hash计算顺时针落在环上的某一个位置。规定客户端ip hash计算之后请求的服务器就近原则。这种策略一旦某个服务器宕机了  只需要将当前服务的客户端重新连接到最近的服务器上，<br>新增服务器  在新增服务器与上一个服务器之间的连接将转移到新增服务器上。</p>
+<h2 id="url-hash-配置负载均衡"><a href="#url-hash-配置负载均衡" class="headerlink" title="url_hash 配置负载均衡"></a>url_hash 配置负载均衡</h2><p>算法介绍 hash(url) % node_counts = index;</p>
+<p>缺点: 某种一种url的请求服务可能会非常大。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">upstream back.cn&#123;</span><br><span class="line">    hash $request_uri;</span><br><span class="line">    server 192.168.157.130;</span><br><span class="line">    server 192.168.157.129;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  localhost;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        proxy_pass http:&#x2F;&#x2F;back.cn;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="least-conn"><a href="#least-conn" class="headerlink" title="least_conn"></a>least_conn</h2><p>最小连接数负载均衡 ，新的请求将落到当前连接数最少的服务器上</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">upstream back.cn&#123;</span><br><span class="line">    least_conn;</span><br><span class="line">    server 192.168.157.130;</span><br><span class="line">    server 192.168.157.129;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  localhost;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        proxy_pass http:&#x2F;&#x2F;back.cn;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><ul>
+<li>静态资源缓存到浏览器上 304缓存状态</li>
+<li>上游服务器的静态资源缓存到下游服务器nginx上</li>
+</ul>
+<p>nginx缓存</p>
+<ul>
+<li>expires 控制浏览器缓存<br>格式<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">expires 30s;#30秒</span><br><span class="line">expires 30m;#30分钟</span><br><span class="line">expires 2h;#2个小时</span><br><span class="line">expires 30d;#30天</span><br></pre></td></tr></table></figure>
+一般用在静态资源中<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">http&#123;</span><br><span class="line">    ...</span><br><span class="line">    server &#123;</span><br><span class="line">        listen 80;</span><br><span class="line">        server_name test.com</span><br><span class="line"></span><br><span class="line">        location ~* \.(jpg|jpeg|gif|bmp|png)&#123;</span><br><span class="line">            expires 1d;#缓存1天</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li>nginx反向代理缓存<br>proxy_cache_path 设置缓存保存的目录<br>keys_zone 设置共享内存名称以及空间大小<br>max_size 设置缓存大小<br>inactive 设置缓存自动清理时间<br>use_temp_path  关闭临时目录</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">http&#123;</span><br><span class="line">    proxy_cache_path &#x2F;usr&#x2F;local&#x2F;cache keys_zone &#x3D; mycache:5m max_size&#x3D;1g inactive&#x3D;1m use_temp_path&#x3D;off;</span><br><span class="line">    server &#123;</span><br><span class="line">        listen 80;</span><br><span class="line">        server_name test.com</span><br><span class="line">        #开启并且使用缓存</span><br><span class="line">        proxy_cache mycache;</span><br><span class="line">        #针对200和304状态码的缓存过期时间</span><br><span class="line">        proxy_cache_valid  200 304 8h</span><br><span class="line">        location ~* \.(jpg|jpeg|gif|bmp|png)&#123;</span><br><span class="line">            expires 1d;#缓存1天</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="nginx-配置https"><a href="#nginx-配置https" class="headerlink" title="nginx 配置https"></a>nginx 配置https</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">http&#123;</span><br><span class="line">    ...</span><br><span class="line">    upstream back.cn&#123;</span><br><span class="line">    hash $request_uri;</span><br><span class="line">    server 192.168.157.130;</span><br><span class="line">    server 192.168.157.129;</span><br><span class="line">    &#125;</span><br><span class="line">    server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        server_name  localhost;</span><br><span class="line">        #开启ssl</span><br><span class="line">        ssl on;</span><br><span class="line">        #配置ssl证书</span><br><span class="line">        ssl_certificate  text.com.bundle.crt;#路劲</span><br><span class="line">        #配置证书秘钥</span><br><span class="line">        ssl_certificate_key 2text.com..key;#路劲</span><br><span class="line">        #ssl会话</span><br><span class="line">        cachessl_session_cache shared:SSL:1m;</span><br><span class="line">        #ssl会话超时时间</span><br><span class="line">        ssl_session_timeout 5m;</span><br><span class="line">        #配置加密套件，写法遵循openssl标准</span><br><span class="line">        ssl_protocolsTLSv1TLSv1.1TLSv1.2;</span><br><span class="line">        ssl_ciphersECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE;</span><br><span class="line">        ssl_prefer_server_ciphers on;</span><br><span class="line"></span><br><span class="line">        location &#x2F; &#123;</span><br><span class="line">            proxy_pass http:&#x2F;&#x2F;back.cn;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/11/06/nginx%E9%9B%86%E7%BE%A4%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E4%B8%8E%E7%BC%93%E5%AD%98/" data-id="ckh5ztlcr0004ukuy48q88s4n" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx%E9%85%8D%E7%BD%AE/" rel="tag">nginx配置</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BC%93%E5%AD%98/" rel="tag">缓存</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%9B%86%E7%BE%A4/" rel="tag">集群</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-keepalived-集群" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/11/02/keepalived-%E9%9B%86%E7%BE%A4/" class="article-date">
@@ -140,7 +229,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/02/keepalived-%E9%9B%86%E7%BE%A4/" data-id="ckh0e1bjo0002bouyaq6vgdf9" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/02/keepalived-%E9%9B%86%E7%BE%A4/" data-id="ckh5ztlci0002ukuy8x2rd5nh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/keepalived/" rel="tag">keepalived</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li></ul>
@@ -218,7 +307,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/22/%E5%AE%BF%E4%B8%BB%E6%9C%BA%E8%AE%BF%E9%97%AE%E8%99%9A%E6%8B%9F%E6%9C%BAweb%E9%A1%B9%E7%9B%AE/" data-id="ckh0e1bk40009bouyg5re7y5n" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/22/%E5%AE%BF%E4%B8%BB%E6%9C%BA%E8%AE%BF%E9%97%AE%E8%99%9A%E6%8B%9F%E6%9C%BAweb%E9%A1%B9%E7%9B%AE/" data-id="ckh5ztldg000iukuy60jy8gdh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/firewalld/" rel="tag">firewalld</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/vmware/" rel="tag">vmware</a></li></ul>
@@ -291,7 +380,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/19/nginx-%E5%88%9D%E8%AF%86%E4%B8%8E%E5%AE%89%E8%A3%85/" data-id="ckh0e1bjm0001bouy2t2l7ck8" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/19/nginx-%E5%88%9D%E8%AF%86%E4%B8%8E%E5%AE%89%E8%A3%85/" data-id="ckh5ztlce0001ukuyfygn0zxn" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li></ul>
@@ -342,7 +431,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/12/hello-world/" data-id="ckh0e1bjf0000bouy482z4lqa" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/12/hello-world/" data-id="ckh5ztlc30000ukuy1x9ef41u" class="article-share-link">Share</a>
       
       
     </footer>
@@ -365,7 +454,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/firewalld/" rel="tag">firewalld</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/keepalived/" rel="tag">keepalived</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vmware/" rel="tag">vmware</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/firewalld/" rel="tag">firewalld</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/keepalived/" rel="tag">keepalived</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx%E9%85%8D%E7%BD%AE/" rel="tag">nginx配置</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vmware/" rel="tag">vmware</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%93%E5%AD%98/" rel="tag">缓存</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9B%86%E7%BE%A4/" rel="tag">集群</a></li></ul>
     </div>
   </div>
 
@@ -375,7 +464,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/firewalld/" style="font-size: 10px;">firewalld</a> <a href="/tags/keepalived/" style="font-size: 10px;">keepalived</a> <a href="/tags/nginx/" style="font-size: 20px;">nginx</a> <a href="/tags/vmware/" style="font-size: 10px;">vmware</a>
+      <a href="/tags/firewalld/" style="font-size: 10px;">firewalld</a> <a href="/tags/keepalived/" style="font-size: 10px;">keepalived</a> <a href="/tags/nginx/" style="font-size: 20px;">nginx</a> <a href="/tags/nginx%E9%85%8D%E7%BD%AE/" style="font-size: 10px;">nginx配置</a> <a href="/tags/vmware/" style="font-size: 10px;">vmware</a> <a href="/tags/%E7%BC%93%E5%AD%98/" style="font-size: 10px;">缓存</a> <a href="/tags/%E9%9B%86%E7%BE%A4/" style="font-size: 10px;">集群</a>
     </div>
   </div>
 
@@ -395,6 +484,10 @@
     <h3 class="widget-title">最新文章</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2020/11/06/nginx%E9%9B%86%E7%BE%A4%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E4%B8%8E%E7%BC%93%E5%AD%98/">nginx集群负载均衡与缓存</a>
+          </li>
         
           <li>
             <a href="/2020/11/02/keepalived-%E9%9B%86%E7%BE%A4/">keepalived 集群</a>
